@@ -1,0 +1,7 @@
+Gemfile.lock
+*swp
+coverage
+*gem
+doc
+.~lock*
+Reviews.odt
