@@ -10,7 +10,7 @@ Gem::Specification.new do |spec|
   spec.email         = ["ernstvangraan@gmail.com"]
   spec.summary       = %q{Execute shell commands easily and securely}
   spec.description   = %q{Implements process replacement, forking, protection from shell injection, and a variety of output options}
-  spec.homepage      = ""
+  spec.homepage      = "https://github.com/evangraan/shexecutor"
   spec.license       = "MIT"
 
   spec.files         = `git ls-files -z`.split("\x0")
