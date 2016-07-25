@@ -161,6 +161,6 @@ end
 
   Please send feedback and comments to the author at:
 
-  Ernst van Graan <ernst.van.graan@hetzner.co.za>
+  Ernst van Graan <ernstvangraan@gmail.com>
 
   Thanks to Sheldon Hearn for review and great ideas that unblocked complex challenges (https://rubygems.org/profiles/sheldonh).

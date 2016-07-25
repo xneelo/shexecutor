@@ -7,7 +7,7 @@ Gem::Specification.new do |spec|
   spec.name          = "shexecutor"
   spec.version       = SHExecutor::VERSION
   spec.authors       = ["Ernst van Graan"]
-  spec.email         = ["ernst.van.graan@hetzner.co.za"]
+  spec.email         = ["ernstvangraan@gmail.com"]
   spec.summary       = %q{Execute shell commands easily and securely}
   spec.description   = %q{Implements process replacement, forking, protection from shell injection, and a variety of output options}
   spec.homepage      = ""
