@@ -1,5 +1,7 @@
 # SHExecutor
 
+[![Gem Version](https://badge.fury.io/rb/shexecutor.png)](https://badge.fury.io/rb/shexecutor)
+
 SHExecutor is a convenience wrapper for executing shell commands from with-in a ruby process.
 
 ## It supports:
