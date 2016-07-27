@@ -78,14 +78,14 @@ describe 'Executor' do
       expect{
         iut.validate
       }.to raise_error(ArgumentError, "Application path not found")
-      path = temp_file_path("testingargumenterror")
+      path = temp_file_path("testingargumenterror") + " spaceincluded"
       iut = SHExecutor::Executor.new({:application_path => path})
       error_received = false
-      #begin
+      begin
         iut.validate
-      #rescue => ex
-      #  error_received = (ex.class == ArgumentError) and (ex.message.include?("Suspected injection vulnerability due to space in application_path or the object being marked as 'tainted' by Ruby. Turn off strict checking if you are sure by setting :protect_against_injection to false"))
-      #end
+      rescue => ex
+        error_received = (ex.class == ArgumentError) and (ex.message.include?("Suspected injection vulnerability due to space in application_path or the object being marked as 'tainted' by Ruby. Turn off strict checking if you are sure by setting :protect_against_injection to false"))
+      end
       expect(error_received).to eq(true)
     end
   end
