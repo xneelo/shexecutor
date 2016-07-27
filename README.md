@@ -1,6 +1,9 @@
 # SHExecutor
 
 [![Gem Version](https://badge.fury.io/rb/shexecutor.png)](https://badge.fury.io/rb/shexecutor)
+[![Build Status](https://travis-ci.org/evangraan/shexecutor.svg?branch=master)](https://travis-ci.org/evangraan/shexecutor)
+[![Coverage Status](https://coveralls.io/repos/github/evangraan/shexecutor/badge.svg?branch=master)](https://coveralls.io/github/evangraan/shexecutor?branch=master)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/bb80cc6f7eee44be816733dfed74cc51)](https://www.codacy.com/app/ernst-van-graan/shexecutor?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=evangraan/shexecutor&amp;utm_campaign=Badge_Grade)
 
 SHExecutor is a convenience wrapper for executing shell commands from with-in a ruby process.
 
