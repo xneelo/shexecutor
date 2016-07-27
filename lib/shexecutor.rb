@@ -109,6 +109,76 @@ module SHExecutor
 
     private
 
+    def handle_timeout(t1, t2, t3)
+      if should_timeout?
+        allow_exceptions_for_timeout(t1, t2, t3)
+        wait_until_done_or_timeout(t1, t2, t3)
+      else
+        join_threads(t1, t2)
+      end
+    end
+
+    def allow_exceptions_for_timeout(t1, t2, t3)
+      t1.abort_on_exception = true
+      t2.abort_on_exception = true
+      t3.abort_on_exception = true
+    end
+
+    def join_threads(t1, t2)
+      t1.join 
+      t2.join
+    end
+
+    def wait_until_done_or_timeout(t1, t2, t3)
+      wait_until_done
+      if not @timedout
+        join_threads(t1, t2)
+        t3.join
+      else
+        @timeout_error = true
+      end
+    end
+
+    def wait_until_done
+      d = false
+      @m.synchronize do
+        d = @done
+      end
+      while not d do
+        sleep 0.1
+        @m.synchronize do
+          d = @done
+        end
+      end
+    end
+
+    def create_thread(stream, data)
+      Thread.new do
+        begin
+          IO.copy_stream(stream, data)
+        rescue Exception => ex
+          raise TimeoutError.new("execution expired") if @timeout_error
+          raise ex
+        end
+      end      
+    end
+
+    def create_timeout_thread
+      Thread.new do
+        count = 0
+        while (count < @options[:timeout]*10) and (@t0.alive?) do
+          sleep 0.1
+          count = count + 1
+        end
+        @m.synchronize do
+          if count >= @options[:timeout]*10
+            @timedout = true
+          end
+          @done = true
+        end
+      end
+    end
+
     def flush_streams
       stdout_data = @data_out.string
       stderr_data = @data_err.string
@@ -175,66 +245,21 @@ module SHExecutor
       @t0 = nil
       Open3::popen3(application_path, options) do |stdin, stdout, stderr, thr|
         @t0 = thr
-        t1 = Thread.new do
-          begin
-            IO.copy_stream(stdout, data_out)
-          rescue Exception => ex
-            raise TimeoutError.new("execution expired") if @timeout_error
-            raise ex
-          end
-        end
-        t2 = Thread.new do
-          begin
-            IO.copy_stream(stderr, data_err)
-          rescue Exception => ex
-            raise TimeoutError.new("execution expired") if @timeout_error
-            raise ex
-          end
-        end
-        m = Mutex.new
-        done = false
-        timedout = false
-        t3 = Thread.new do
-          count = 0
-          while (count < @options[:timeout]*10) and (@t0.alive?) do
-            sleep 0.1
-            count = count + 1
-          end
-          m.synchronize do
-            if count >= @options[:timeout]*10
-              timedout = true
-            end
-            done = true
-          end
-        end if should_timeout?
-        stdin.close
-        t1.abort_on_exception = true if should_timeout?
-        t2.abort_on_exception = true if should_timeout?
-        t3.abort_on_exception = true if should_timeout?
-        t1.join if not should_timeout?
-        t2.join if not should_timeout?
-        if should_timeout?
-          d = false
-          m.synchronize do
-            d = done
-          end
-          while not d do
-            sleep 0.1
-            m.synchronize do
-              d = done
-            end
-          end
-
-          if not timedout
-            t1.join 
-            t2.join
-            t3.join
-          else
-            @timeout_error = true
-          end
-        end
+        t1, t2, t3 = run_process_using_popen3(stdin, stdout, stderr, data_out, data_err)
+        handle_timeout(t1, t2, t3)
       end
       return data_out, data_err, @t0
+    end
+
+    def run_process_using_popen3(stdin, stdout, stderr, data_out, data_err)
+      t1 = create_thread(stdout, data_out)
+      t2 = create_thread(stderr, data_err)
+      @m = Mutex.new
+      @done = false
+      @timedout = false
+      t3 = create_timeout_thread if should_timeout?
+      stdin.close
+      return t1, t2, t3
     end
 
     def block_process
