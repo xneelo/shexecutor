@@ -130,7 +130,7 @@ module SHExecutor
     end
 
     def buffer_to_file(buffer, path, append)
-      unless append
+      if not append
         FileUtils.rm_f(path)
       end
       File.write(path, buffer, buffer.size, mode: 'a')
