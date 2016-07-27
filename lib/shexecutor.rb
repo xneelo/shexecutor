@@ -33,8 +33,8 @@ module SHExecutor
   end
 
   def self.execute_non_blocking(application_path, params = nil)
-      executor = SHExecutor::Executor.new({:wait_for_completion => false, :application_path => application_path, :params => params})
-     executor.execute
+    executor = SHExecutor::Executor.new({:wait_for_completion => false, :application_path => application_path, :params => params})
+    executor.execute
   end
 
   class Executor
@@ -142,7 +142,7 @@ module SHExecutor
       @m.synchronize do
         d = @done
       end
-      while not d do
+      until d do
         sleep 0.1
         @m.synchronize do
           d = @done
@@ -206,7 +206,7 @@ module SHExecutor
 
     def validate_path(errors, path)
       if (File.exists?(path))
-        errors << "Application path not executable" if !File.executable?(path)
+        errors << "Application path not executable" unless File.executable?(path)
       else
         errors << "Application path not found"
       end
@@ -218,9 +218,7 @@ module SHExecutor
     end
 
     def buffer_to_file(buffer, path, append)
-      if not append
-        FileUtils.rm_f(path)
-      end
+      FileUtils.rm_f(path) unless append
       File.write(path, buffer, buffer.size, mode: 'a')
     end
 
@@ -241,7 +239,7 @@ module SHExecutor
       data_out = StringIO.new
       data_err = StringIO.new
       @t0 = nil
-      Open3::popen3(application_path, options) do |stdin, stdout, stderr, thr|
+      Open3.popen3(application_path, options) do |stdin, stdout, stderr, thr|
         @t0 = thr
         t1, t2, t3 = run_process_using_popen3(stdin, stdout, stderr, data_out, data_err)
         handle_timeout(t1, t2, t3)
