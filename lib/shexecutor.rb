@@ -78,18 +78,7 @@ module SHExecutor
 
     def validate
       errors = []
-      if (@options[:protect_against_injection]) and (!@options[:application_path].nil? and @options[:application_path].strip != "")
-        if (File.exists?(@options[:application_path]))
-          errors << "Application path not executable" if !File.executable?(@options[:application_path])
-        else
-          errors << "Application path not found"
-        end
-
-        errors << "Suspected injection vulnerability due to space in application_path or the object being marked as 'tainted' by Ruby. Turn off strict checking if you are sure by setting :protect_against_injection to false" if possible_injection?(@options[:application_path])
-      else
-        errors << "No application path provided" if (@options[:application_path].nil?) or (@options[:application_path].strip == "")
-      end
-
+      errors = validate_path_presence_and_integrity(errors, @options[:application_path])
       raise ArgumentError.new(errors.join(',')) if errors.count > 0
     end
 
@@ -114,18 +103,50 @@ module SHExecutor
 
     def flush
       return nil if @data_out.nil? or @data_err.nil?
-      stdout_data = @data_out.string
-      stderr_data = @data_err.string
-      @stdout = stdout_data if stdout_data != ""
-      @stderr = stderr_data if stderr_data != ""
-      stdout_to_file if (@options[:stdout_path])
-      stderr_to_file if (@options[:stderr_path])
+      flush_streams
+      flush_to_file
     end
 
     private
 
+    def flush_streams
+      stdout_data = @data_out.string
+      stderr_data = @data_err.string
+      @stdout = stdout_data if stdout_data != ""
+      @stderr = stderr_data if stderr_data != ""
+    end
+
+    def flush_to_file
+      stdout_to_file if (@options[:stdout_path])
+      stderr_to_file if (@options[:stderr_path])
+    end
+
+    def validate_path_presence_and_integrity(errors, path)
+      if (@options[:protect_against_injection]) and (!path.nil? and path.strip != "")
+        errors = validate_path_integrity(errors, path)
+      else
+        errors << "No application path provided" if (@options[:application_path].nil?) or (@options[:application_path].strip == "")
+      end
+      errors
+    end
+
+    def validate_path_integrity(errors, path)
+      errors = validate_path(errors, path)
+      errors << "Suspected injection vulnerability due to space in application_path or the object being marked as 'tainted' by Ruby. Turn off strict checking if you are sure by setting :protect_against_injection to false" if possible_injection?(@options[:application_path])
+      errors
+    end
+
+    def validate_path(errors, path)
+      if (File.exists?(path))
+        errors << "Application path not executable" if !File.executable?(path)
+      else
+        errors << "Application path not found"
+      end
+      errors
+    end
+
     def possible_injection?(application_path)
-      (@options[:protect_against_injection]) and (@options[:application_path].include?(" ") or @options[:application_path].tainted?)
+      (@options[:protect_against_injection]) and (application_path.include?(" ") or application_path.tainted?)
     end
 
     def buffer_to_file(buffer, path, append)

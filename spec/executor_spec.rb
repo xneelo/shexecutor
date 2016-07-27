@@ -264,7 +264,7 @@ describe 'Executor' do
         test_command = "/bin/ls"
         test_params = ["/tmp/"]
         iut = SHExecutor::Executor.new({:wait_for_completion => true, :application_path => test_command, :params => test_params})
-        stdin = stdout = stderr = StringIO.new
+        stdout = stderr = StringIO.new
         expect(iut).to receive(:run_process).with(test_command, *test_params).and_return([stdout, stderr, Result.new(true)])
         iut.execute
       rescue IOError => ex
