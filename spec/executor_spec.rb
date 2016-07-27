@@ -441,4 +441,37 @@ describe 'Executor' do
       expect(iut.stderr.include?("No such file or directory")).to eq(true)
     end
   end
+
+  context "when using helpers" do
+    it 'should execute blocking' do
+      test_command = "/bin/ls"
+      test_params = ["/tmp/"]
+      result, out, err = SHExecutor.execute_blocking(test_command, test_params)
+      expect(result.exitstatus).to eq(0)
+      expect(err).to eq(nil)
+      expect(out.is_a?(String)).to eq(true)
+    end
+
+    it 'should execute and support timeout' do
+      test_command = "/bin/ls"
+      test_params = ["/tmp/"]
+      result, out, err = SHExecutor.execute_and_timeout_after(test_command, test_params, 2)
+      expect(result.exitstatus).to eq(0)
+      expect(err).to eq(nil)
+      expect(out.is_a?(String)).to eq(true)
+    end
+
+    it 'should support non-blocking' do
+      test_command = "/bin/sleep"
+      test_params = ["2"]
+      before = Time.now
+      thr, stdout_io, stderr_io = SHExecutor.execute_non_blocking(test_command, test_params)
+      after = Time.now
+      expect(after - before).to be < 0.2
+      sleep 3
+      expect(thr.alive?).to eq(false)
+      expect(stdout_io.read).to eq("")
+      expect(stderr_io.read).to eq("")
+    end
+  end
 end
