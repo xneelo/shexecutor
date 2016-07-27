@@ -67,19 +67,19 @@ Or install it yourself as:
 ###Blocking
 
 ```
-result, stdout, stderr = ::SHExecutor::execute_blocking("/bin/ls", "/tmp/")
+result, stdout, stderr = ::SHExecutor.execute_blocking("/bin/ls", "/tmp/")
 ```
 
 ###Blocking with timeout
 
 ```
-result, stdout, stderr = ::SHExecutor::execute_and_timeout_after("/bin/sleep", "10", 2)
+result, stdout, stderr = ::SHExecutor.execute_and_timeout_after("/bin/sleep", "10", 2)
 ```
 
 ###Non-blocking
 
 ```
-thr, stdout_io, stderr_io = ::SHExecutor::execute_non_blocking("/bin/sleep", "20")
+thr, stdout_io, stderr_io = ::SHExecutor.execute_non_blocking("/bin/sleep", "20")
 ```
 
 ##Executor API
@@ -149,10 +149,10 @@ puts iut.stderr
 
 ```
 def shexecutor_complication
-  result, stdout, stderr = ::SHExecutor::execute_and_timeout_after("/bin/sleep", "30", 20)
+  result, stdout, stderr = ::SHExecutor.execute_and_timeout_after("/bin/sleep", "30", 20)
 end
 
-Timeout::timeout(5) do
+Timeout.timeout(5) do
   shexecutor_complication
 end
 

@@ -53,11 +53,9 @@ module SHExecutor
 
     public
 
-    def initialize(options = ::SHExecutor::default_options)
-      # set default options
-      @options = ::SHExecutor::default_options.dup
+    def initialize(options = ::SHExecutor.default_options)
+      @options = ::SHExecutor.default_options.dup
 
-      # then apply specified options
       options.each do |key, value|
         @options[key] = value
       end
@@ -300,12 +298,12 @@ module SHExecutor
       end
       Process.kill(9, pid) if process?(pid)
     rescue Errno::ESRCH
-      #done
+      # done
     end
 
     def fork_process
       validate
-      @stdin_stream, @stdout_stream, @stderr_stream, @result = Open3::popen3(@options[:application_path], *@options[:params]) 
+      @stdin_stream, @stdout_stream, @stderr_stream, @result = Open3.popen3(@options[:application_path], *@options[:params]) 
       return @result, @stdout_stream, @stderr_stream
     end
 

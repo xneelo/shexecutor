@@ -54,7 +54,7 @@ describe 'Executor' do
 
   context 'when initialized with some but not all options' do
     it 'should remember the options provided and default the rest' do
-      expected_options = ::SHExecutor::default_options
+      expected_options = ::SHExecutor.default_options
       expected_options[:wait_for_completion] = false
       iut_options = {
         :wait_for_completion => false
@@ -117,16 +117,16 @@ describe 'Executor' do
       test_params = ["/tmp/"]
       iut = SHExecutor::Executor.new({:replace => true, :application_path => test_command, :params => test_params})
       iut.execute
-      expect(Kernel::last_command).to eq(test_command)
-      expect(Kernel::last_params).to eq(*test_params)
+      expect(Kernel.last_command).to eq(test_command)
+      expect(Kernel.last_params).to eq(*test_params)
     end
 
     it 'should use exec with the command if no parameters are specified and replacing' do
       test_command = "/bin/ls"
       iut = SHExecutor::Executor.new({:replace => true, :application_path => test_command})
       iut.execute
-      expect(Kernel::last_command).to eq(test_command)
-      expect(Kernel::last_params).to be_nil
+      expect(Kernel.last_command).to eq(test_command)
+      expect(Kernel.last_params).to be_nil
     end
 
     it 'should use exec with the command if no parameters are specified and not waiting for completion' do
@@ -144,13 +144,13 @@ describe 'Executor' do
 
     it 'should not replace if replace is not true' do
       iut = SHExecutor::Executor.new({:application_path => "/bin/ls", :replace => false})
-      Kernel::last_command = "not executed"
+      Kernel.last_command = "not executed"
       iut.execute
-      expect(Kernel::last_command).to eq("not executed")
+      expect(Kernel.last_command).to eq("not executed")
 
       iut = SHExecutor::Executor.new({:application_path => "/bin/ls", :replace => 'blah ignore this'})
       iut.execute
-      expect(Kernel::last_command).to eq("not executed")
+      expect(Kernel.last_command).to eq("not executed")
     end
   end
 

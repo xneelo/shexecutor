@@ -5,7 +5,7 @@ module Kernel
   def exec(cmd, params = nil)
     @@last_command = cmd
     @@last_params = params
-    puts "Kernel::exec('#{cmd}', '#{params}')"
+    puts "Kernel.exec('#{cmd}', '#{params}')"
   end
 
   def last_command=(command)
