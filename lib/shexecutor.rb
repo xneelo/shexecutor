@@ -68,7 +68,7 @@ module SHExecutor
     def status
       return "not executed" if @result.nil?
       return @result.status if @result.alive?
-      return "no longer executing" if not @result.alive?
+      return "no longer executing" unless @result.alive?
     end
 
     def result
@@ -130,7 +130,7 @@ module SHExecutor
     end
 
     def buffer_to_file(buffer, path, append)
-      if not append
+      unless append
         FileUtils.rm_f(path)
       end
       File.write(path, buffer, buffer.size, mode: 'a')
@@ -191,8 +191,8 @@ module SHExecutor
         t1.abort_on_exception = true if should_timeout?
         t2.abort_on_exception = true if should_timeout?
         t3.abort_on_exception = true if should_timeout?
-        t1.join if not should_timeout?
-        t2.join if not should_timeout?
+        t1.join unless should_timeout?
+        t2.join unless should_timeout?
         if should_timeout?
           d = false
           m.synchronize do
@@ -205,7 +205,7 @@ module SHExecutor
             end
           end
 
-          if not timedout
+          unless timedout
             t1.join 
             t2.join
             t3.join
