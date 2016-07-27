@@ -83,10 +83,8 @@ describe 'Executor' do
       error_received = false
       begin
         iut.validate
-        puts "!!!!"
       rescue => ex
-        puts ex
-        error_received = (ex.class == ArgumentError) and (ex.message.include?("Suspected injection vulnerability due to space in application_path or the object being marked as 'tainted' by Ruby. Turn off strict checking if you are sure by setting :protect_against_injection to false"))
+        error_received = (ex.class == ArgumentError) # and (ex.message.include?("Suspected injection vulnerability due to space in application_path or the object being marked as 'tainted' by Ruby. Turn off strict checking if you are sure by setting :protect_against_injection to false"))
       end
       expect(error_received).to eq(true)
     end

@@ -81,12 +81,11 @@ module SHExecutor
       if (@options[:protect_against_injection]) and (!@options[:application_path].nil? and @options[:application_path].strip != "")
         if (File.exists?(@options[:application_path]))
           errors << "Application path not executable" if !File.executable?(@options[:application_path])
-	else
+        else
           errors << "Application path not found"
-	end
+        end
 
-       errors << "Suspected injection vulnerability due to space in application_path or the object being marked as 'tainted' by Ruby. Turn off strict checking if you are sure by setting :protect_against_injection to false" if possible_injection?(@options[:application_path])
-
+        errors << "Suspected injection vulnerability due to space in application_path or the object being marked as 'tainted' by Ruby. Turn off strict checking if you are sure by setting :protect_against_injection to false" if possible_injection?(@options[:application_path])
       else
         errors << "No application path provided" if (@options[:application_path].nil?) or (@options[:application_path].strip == "")
       end
